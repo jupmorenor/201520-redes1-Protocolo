@@ -2,13 +2,361 @@
 Created on 22/11/2015
 @author: Juan Pablo Moreno - 20111020059
 '''
-from PyQt4.QtGui import QMainWindow
+from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QCheckBox, QPushButton
+from PyQt4.QtCore import Qt
 
-class Ventana(QMainWindow):
+
+class Ventana(QWidget):
 	'''
 	Ventana de interfaz grafica para la aplicacion
 	'''
 
 	def __init__(self):
 		super(Ventana, self).__init__()
+		self.inicializar()
+		
+		
+	def inicializar(self):
+		self.setWindowTitle("Protocolo de transmision de datos")
+		
+		#------------------------------------#
+		#		ELEMENTOS DEL TRANSMISOR	 #
+		#------------------------------------#
+		
+		#Etiquetas transmisor
+		tituloT = QLabel("TRANSMISOR")
+		labelMensajeT = QLabel("Mensaje a transmitir:")
+		labelFramesT = QLabel("Numero de frames:")
+		labelIndicador1T = QLabel("INDICADOR")
+		labelACKT = QLabel("ACK")
+		labelENQT = QLabel("ENQ")
+		labelCTRT = QLabel("CTR")
+		labelDATT = QLabel("DAT")
+		labelPPTT = QLabel("PPT")
+		labelLPTT = QLabel("LPT")
+		labelNUMT = QLabel("NUM")
+		labelInfoT = QLabel("INFORMACION")
+		labelIndicador2T = QLabel("INDICADOR")
+		self.labelSemanticaT = QLabel("Semantica: ")
+		
+		tituloT.adjustSize()
+		labelMensajeT.adjustSize()
+		labelFramesT.adjustSize()
+		labelIndicador1T.adjustSize()
+		labelACKT.adjustSize()
+		labelENQT.adjustSize()
+		labelCTRT.adjustSize()
+		labelDATT.adjustSize()
+		labelPPTT.adjustSize()
+		labelLPTT.adjustSize()
+		labelNUMT.adjustSize()
+		labelInfoT.adjustSize()
+		labelIndicador2T.adjustSize()
+		self.labelSemanticaT.adjustSize()
+		
+		#campos de texto transmisor
+		self.textoMensajeT = QLineEdit()
+		self.textoFramesT = QLineEdit()
+		self.textoIndicador1T = QLineEdit()
+		self.textoACKT = QLineEdit()
+		self.textoENQT = QLineEdit()
+		self.textoCTRT = QLineEdit()
+		self.textoDATT = QLineEdit()
+		self.textoPPTT = QLineEdit()
+		self.textoLPTT = QLineEdit()
+		self.textoNUMT = QLineEdit()
+		self.textoInfoT = QLineEdit()
+		self.textoIndicador2T = QLineEdit()
+		
+		self.textoIndicador1T.setEnabled(False)
+		self.textoACKT.setEnabled(False)
+		self.textoENQT.setEnabled(False)
+		self.textoCTRT.setEnabled(False)
+		self.textoDATT.setEnabled(False)
+		self.textoPPTT.setEnabled(False)
+		self.textoLPTT.setEnabled(False)
+		self.textoNUMT.setEnabled(False)
+		self.textoInfoT.setEnabled(False)
+		self.textoIndicador2T.setEnabled(False)
+		
+		#Selectores de campos de control
+		self.checkACK = QCheckBox()
+		self.checkENQ = QCheckBox()
+		self.checkCTR = QCheckBox()
+		self.checkDAT = QCheckBox()
+		self.checkPPT = QCheckBox()
+		self.checkLPT = QCheckBox()
+		
+		#boton de transmision
+		self.botonTransmisor = QPushButton("ENVIAR")	
+		
+		#agregar los elementos al segundo nivel de layout
+		fila1 = QHBoxLayout()
+		fila2 = QHBoxLayout()
+		fila3 = QHBoxLayout()
+		fila4 = QHBoxLayout()
+		cajaTransmisor = QVBoxLayout()
+		
+		fila1.addWidget(tituloT)
+		fila2.addWidget(labelMensajeT)
+		fila2.addWidget(self.textoMensajeT)
+		fila2.addWidget(labelFramesT)
+		fila2.addWidget(self.textoFramesT)
+		fila4.addWidget(self.labelSemanticaT)
+		
+		fila3_1 = QVBoxLayout()
+		fila3_2 = QVBoxLayout()
+		fila3_3 = QVBoxLayout()
+		fila3_4 = QVBoxLayout()
+		fila3_5 = QVBoxLayout()
+		fila3_6 = QVBoxLayout()
+		fila3_7 = QVBoxLayout()
+		fila3_8 = QVBoxLayout()
+		fila3_9 = QVBoxLayout()
+		fila3_10 = QVBoxLayout()
+		
+		fila3_1.addWidget(labelIndicador1T)
+		fila3_1.addWidget(self.textoIndicador1T)
+		fila3_1.setAlignment(Qt.AlignTop)
+		fila3_2.addWidget(labelACKT)
+		fila3_2.addWidget(self.textoACKT)
+		fila3_2.addWidget(self.checkACK)
+		fila3_3.addWidget(labelENQT)
+		fila3_3.addWidget(self.textoENQT)
+		fila3_3.addWidget(self.checkENQ)
+		fila3_4.addWidget(labelCTRT)
+		fila3_4.addWidget(self.textoCTRT)
+		fila3_4.addWidget(self.checkCTR)
+		fila3_5.addWidget(labelDATT)
+		fila3_5.addWidget(self.textoDATT)
+		fila3_5.addWidget(self.checkDAT)
+		fila3_6.addWidget(labelPPTT)
+		fila3_6.addWidget(self.textoPPTT)
+		fila3_6.addWidget(self.checkPPT)
+		fila3_7.addWidget(labelLPTT)
+		fila3_7.addWidget(self.textoLPTT)
+		fila3_7.addWidget(self.checkLPT)
+		fila3_8.addWidget(labelNUMT)
+		fila3_8.addWidget(self.textoNUMT)
+		fila3_8.setAlignment(Qt.AlignTop)
+		fila3_9.addWidget(labelInfoT)
+		fila3_9.addWidget(self.textoInfoT)
+		fila3_9.setAlignment(Qt.AlignTop)
+		fila3_10.addWidget(labelIndicador2T)
+		fila3_10.addWidget(self.textoIndicador2T)
+		fila3_10.setAlignment(Qt.AlignTop)
+		fila3.addLayout(fila3_1)
+		fila3.addLayout(fila3_2)
+		fila3.addLayout(fila3_3)
+		fila3.addLayout(fila3_4)
+		fila3.addLayout(fila3_5)
+		fila3.addLayout(fila3_6)
+		fila3.addLayout(fila3_7)
+		fila3.addLayout(fila3_8)
+		fila3.addLayout(fila3_9)
+		fila3.addLayout(fila3_10)
+		fila3.addWidget(self.botonTransmisor)
+		
+		cajaTransmisor.addLayout(fila1)
+		cajaTransmisor.addLayout(fila2)
+		cajaTransmisor.addLayout(fila3)
+		cajaTransmisor.addLayout(fila4)
+		
+		#------------------------------------#
+		#		ELEMENTOS DEL RECEPTOR		 #
+		#------------------------------------#
+		
+		#Etiquetas receptor
+		tituloR = QLabel("RECEPTOR")
+		labelFrameR = QLabel("Trama recibida:")
+		labelHeaderR = QLabel("HEADER")
+		labelInformacionR = QLabel("INFORMACION")
+		labelTrailerR = QLabel("TRAILER")
+		labelRespuestaR = QLabel("Respuesta: ")
+		labelIndicador1R = QLabel("INDICADOR")
+		labelACKR = QLabel("ACK")
+		labelENQR = QLabel("ENQ")
+		labelCTRR = QLabel("CTR")
+		labelDATR = QLabel("DAT")
+		labelPPTR = QLabel("PPT")
+		labelLPTR = QLabel("LPT")
+		labelNUMR = QLabel("NUM")
+		labelInfoR = QLabel("INFORMACION")
+		labelIndicador2R = QLabel("INDICADOR")
+		self.labelSemanticaR = QLabel("Semantica: ")
+		labelMensajeR = QLabel("Mensaje recibido:")
+		
+		tituloR.adjustSize()
+		labelFrameR.adjustSize()
+		labelHeaderR.adjustSize()
+		labelInformacionR.adjustSize()
+		labelTrailerR.adjustSize()
+		labelRespuestaR.adjustSize()
+		labelIndicador1R.adjustSize()
+		labelACKR.adjustSize()
+		labelENQR.adjustSize()
+		labelCTRR.adjustSize()
+		labelDATR.adjustSize()
+		labelPPTR.adjustSize()
+		labelLPTR.adjustSize()
+		labelNUMR.adjustSize()
+		labelInfoR.adjustSize()
+		labelIndicador2R.adjustSize()
+		self.labelSemanticaR.adjustSize()
+		labelMensajeR.adjustSize()
+		
+		#campos de texto receptor
+		self.textoHeaderR = QLineEdit()
+		self.textoCamposR = QLineEdit()
+		self.textoInformacionR = QLineEdit()
+		self.textoTrailerR = QLineEdit()
+		self.textoIndicador1R = QLineEdit()
+		self.textoACKR = QLineEdit()
+		self.textoENQR = QLineEdit()
+		self.textoCTRR = QLineEdit()
+		self.textoDATR = QLineEdit()
+		self.textoPPTR = QLineEdit()
+		self.textoLPTR = QLineEdit()
+		self.textoNUMR = QLineEdit()
+		self.textoInfoR = QLineEdit()
+		self.textoIndicador2R = QLineEdit()
+		self.textoMensajeR = QLineEdit()
+		
+		self.textoHeaderR.setEnabled(False)
+		self.textoCamposR.setEnabled(False)
+		self.textoInformacionR.setEnabled(False)
+		self.textoTrailerR.setEnabled(False)
+		self.textoIndicador1R.setEnabled(False)
+		self.textoACKR.setEnabled(False)
+		self.textoENQR.setEnabled(False)
+		self.textoCTRR.setEnabled(False)
+		self.textoDATR.setEnabled(False)
+		self.textoPPTR.setEnabled(False)
+		self.textoLPTR.setEnabled(False)
+		self.textoNUMR.setEnabled(False)
+		self.textoInfoR.setEnabled(False)
+		self.textoIndicador2R.setEnabled(False)
+	
+		#boton de respuesta
+		self.botonRespuesta = QPushButton("RESPONDER")
+		
+		#agregar los elementos al segundo nivel de layout
+		fila5 = QHBoxLayout()
+		fila6 = QHBoxLayout()
+		fila7 = QHBoxLayout()
+		fila8 = QHBoxLayout()
+		fila9 = QHBoxLayout()
+		fila10 = QHBoxLayout()
+		fila11 = QHBoxLayout()
+		cajaReceptor = QVBoxLayout()
+		
+		
+		
+		fila7_1A = QHBoxLayout()
+		fila7_1 = QVBoxLayout()
+		fila7_2 = QVBoxLayout()
+		fila7_3 = QVBoxLayout()
+		
+		fila7_1A.addWidget(self.textoHeaderR)
+		fila7_1A.addWidget(self.textoCamposR)
+		fila7_1.addLayout(fila7_1A)
+		fila7_1.addWidget(labelHeaderR)	
+		fila7_2.addWidget(self.textoInformacionR)
+		fila7_2.addWidget(labelInformacionR)
+		fila7_3.addWidget(self.textoTrailerR)
+		fila7_3.addWidget(labelTrailerR)
+		
+		fila5.addWidget(tituloR)
+		fila6.addWidget(labelFrameR)
+		fila7.addLayout(fila7_1)
+		fila7.addLayout(fila7_2)
+		fila7.addLayout(fila7_3)
+		fila8.addWidget(labelRespuestaR)
+		
+		#fila9
+		fila9_1 = QVBoxLayout()
+		fila9_2 = QVBoxLayout()
+		fila9_3 = QVBoxLayout()
+		fila9_4 = QVBoxLayout()
+		fila9_5 = QVBoxLayout()
+		fila9_6 = QVBoxLayout()
+		fila9_7 = QVBoxLayout()
+		fila9_8 = QVBoxLayout()
+		fila9_9 = QVBoxLayout()
+		fila9_10 = QVBoxLayout()
+		
+		fila9_1.addWidget(labelIndicador1R)
+		fila9_1.addWidget(self.textoIndicador1R)
+		fila9_2.addWidget(labelACKR)
+		fila9_2.addWidget(self.textoACKR)
+		fila9_3.addWidget(labelENQR)
+		fila9_3.addWidget(self.textoENQR)
+		fila9_4.addWidget(labelCTRR)
+		fila9_4.addWidget(self.textoCTRR)
+		fila9_5.addWidget(labelDATR)
+		fila9_5.addWidget(self.textoDATR)
+		fila9_6.addWidget(labelPPTR)
+		fila9_6.addWidget(self.textoPPTR)
+		fila9_7.addWidget(labelLPTR)
+		fila9_7.addWidget(self.textoLPTR)
+		fila9_8.addWidget(labelNUMR)
+		fila9_8.addWidget(self.textoNUMR)
+		fila9_9.addWidget(labelInfoR)
+		fila9_9.addWidget(self.textoInfoR)
+		fila9_10.addWidget(labelIndicador2R)
+		fila9_10.addWidget(self.textoIndicador2R)
+		
+		fila9.addLayout(fila9_1)
+		fila9.addLayout(fila9_2)
+		fila9.addLayout(fila9_3)
+		fila9.addLayout(fila9_4)
+		fila9.addLayout(fila9_5)
+		fila9.addLayout(fila9_6)
+		fila9.addLayout(fila9_7)
+		fila9.addLayout(fila9_8)
+		fila9.addLayout(fila9_9)
+		fila9.addLayout(fila9_10)
+		fila9.addWidget(self.botonRespuesta)
+		
+		fila10.addWidget(self.labelSemanticaR)
+		fila11.addWidget(labelMensajeR)
+		fila11.addWidget(self.textoMensajeR)
+		
+		cajaReceptor.addLayout(fila5)
+		cajaReceptor.addLayout(fila6)
+		cajaReceptor.addLayout(fila7)
+		cajaReceptor.addLayout(fila8)
+		cajaReceptor.addLayout(fila9)
+		cajaReceptor.addLayout(fila10)
+		cajaReceptor.addLayout(fila11)
+		
+		#------------------------------------#
+		
+		
+		#agregar el segundo nivel de layout al panel OK
+		panelTransmisor = QFrame(self)
+		panelTransmisor.setFrameShape(QFrame.StyledPanel)
+		panelTransmisor.setLayout(cajaTransmisor)
+		
+		#agregar el segundo nivel de layout al panel OK
+		panelReceptor = QFrame(self)
+		panelReceptor.setFrameShape(QFrame.StyledPanel)
+		panelReceptor.setLayout(cajaReceptor)
+		
+		#agregar el panel al separador OK
+		separador = QSplitter(Qt.Vertical)
+		separador.addWidget(panelTransmisor)
+		separador.addWidget(panelReceptor)
+		
+		#agregar el separador al primer layout OK
+		caja = QVBoxLayout(self)
+		caja.addWidget(separador)
+		
+		#agregar el layout a la ventana OK
+		self.setLayout(caja)
+		
+		self.setFixedSize(800, 500)
 		self.show()
+		
+		
+		

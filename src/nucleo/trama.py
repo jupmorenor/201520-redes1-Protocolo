@@ -19,7 +19,7 @@ class Trama(object):
 	'''
 
 	def __init__(self):
-		self.HEAD=10000001
+		self.INDICADOR=10000001
 		self.ACK=0
 		self.ENQ=0
 		self.CTR=0
@@ -28,11 +28,10 @@ class Trama(object):
 		self.LPT=0
 		self.NUM=0
 		self.INFO=''
-		self.TRAIL=10000001
 		
 	def __call__(self):
-		return str(self.HEAD)+str(self.ACK)+str(self.ENQ)+str(self.CTR)+str(self.DAT)+str(self.PPT)+\
-	str(self.LPT)+str(self.NUM)+self.INFO+str(self.TRAIL)
+		return str(self.INDICADOR)+str(self.ACK)+str(self.ENQ)+str(self.CTR)+str(self.DAT)+str(self.PPT)+\
+	str(self.LPT)+str(self.NUM)+self.INFO+str(self.INDICADOR)
 		
 if __name__ =='__main__':
 	print Trama()()	

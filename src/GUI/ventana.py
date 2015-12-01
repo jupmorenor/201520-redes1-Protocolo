@@ -4,6 +4,7 @@ Created on 22/11/2015
 '''
 from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QCheckBox, QPushButton
 from PyQt4.QtCore import Qt
+from nucleo import Trama
 
 
 class Ventana(QWidget):
@@ -13,11 +14,12 @@ class Ventana(QWidget):
 
 	def __init__(self):
 		super(Ventana, self).__init__()
-		self.inicializar()
+		self._inicializar()
 		
 		
-	def inicializar(self):
+	def _inicializar(self):
 		self.setWindowTitle("Protocolo de transmision de datos")
+		self.trama = Trama()
 		
 		#------------------------------------#
 		#		ELEMENTOS DEL TRANSMISOR	 #
@@ -33,7 +35,7 @@ class Ventana(QWidget):
 		labelCTRT = QLabel("CTR")
 		labelDATT = QLabel("DAT")
 		labelPPTT = QLabel("PPT")
-		labelLPTT = QLabel("LPT")
+		labelLPRT = QLabel("LPR")
 		labelNUMT = QLabel("NUM")
 		labelInfoT = QLabel("INFORMACION")
 		labelIndicador2T = QLabel("INDICADOR")
@@ -48,7 +50,7 @@ class Ventana(QWidget):
 		labelCTRT.adjustSize()
 		labelDATT.adjustSize()
 		labelPPTT.adjustSize()
-		labelLPTT.adjustSize()
+		labelLPRT.adjustSize()
 		labelNUMT.adjustSize()
 		labelInfoT.adjustSize()
 		labelIndicador2T.adjustSize()
@@ -63,21 +65,10 @@ class Ventana(QWidget):
 		self.textoCTRT = QLineEdit()
 		self.textoDATT = QLineEdit()
 		self.textoPPTT = QLineEdit()
-		self.textoLPTT = QLineEdit()
+		self.textoLPRT = QLineEdit()
 		self.textoNUMT = QLineEdit()
 		self.textoInfoT = QLineEdit()
 		self.textoIndicador2T = QLineEdit()
-		
-		self.textoIndicador1T.setEnabled(False)
-		self.textoACKT.setEnabled(False)
-		self.textoENQT.setEnabled(False)
-		self.textoCTRT.setEnabled(False)
-		self.textoDATT.setEnabled(False)
-		self.textoPPTT.setEnabled(False)
-		self.textoLPTT.setEnabled(False)
-		self.textoNUMT.setEnabled(False)
-		self.textoInfoT.setEnabled(False)
-		self.textoIndicador2T.setEnabled(False)
 		
 		#Selectores de campos de control
 		self.checkACK = QCheckBox()
@@ -85,7 +76,7 @@ class Ventana(QWidget):
 		self.checkCTR = QCheckBox()
 		self.checkDAT = QCheckBox()
 		self.checkPPT = QCheckBox()
-		self.checkLPT = QCheckBox()
+		self.checkLPR = QCheckBox()
 		
 		#boton de transmision
 		self.botonTransmisor = QPushButton("ENVIAR")	
@@ -133,9 +124,9 @@ class Ventana(QWidget):
 		fila3_6.addWidget(labelPPTT)
 		fila3_6.addWidget(self.textoPPTT)
 		fila3_6.addWidget(self.checkPPT)
-		fila3_7.addWidget(labelLPTT)
-		fila3_7.addWidget(self.textoLPTT)
-		fila3_7.addWidget(self.checkLPT)
+		fila3_7.addWidget(labelLPRT)
+		fila3_7.addWidget(self.textoLPRT)
+		fila3_7.addWidget(self.checkLPR)
 		fila3_8.addWidget(labelNUMT)
 		fila3_8.addWidget(self.textoNUMT)
 		fila3_8.setAlignment(Qt.AlignTop)
@@ -179,7 +170,7 @@ class Ventana(QWidget):
 		labelCTRR = QLabel("CTR")
 		labelDATR = QLabel("DAT")
 		labelPPTR = QLabel("PPT")
-		labelLPTR = QLabel("LPT")
+		labelLPRR = QLabel("LPR")
 		labelNUMR = QLabel("NUM")
 		labelInfoR = QLabel("INFORMACION")
 		labelIndicador2R = QLabel("INDICADOR")
@@ -198,7 +189,7 @@ class Ventana(QWidget):
 		labelCTRR.adjustSize()
 		labelDATR.adjustSize()
 		labelPPTR.adjustSize()
-		labelLPTR.adjustSize()
+		labelLPRR.adjustSize()
 		labelNUMR.adjustSize()
 		labelInfoR.adjustSize()
 		labelIndicador2R.adjustSize()
@@ -216,27 +207,12 @@ class Ventana(QWidget):
 		self.textoCTRR = QLineEdit()
 		self.textoDATR = QLineEdit()
 		self.textoPPTR = QLineEdit()
-		self.textoLPTR = QLineEdit()
+		self.textoLPRR = QLineEdit()
 		self.textoNUMR = QLineEdit()
 		self.textoInfoR = QLineEdit()
 		self.textoIndicador2R = QLineEdit()
 		self.textoMensajeR = QLineEdit()
-		
-		self.textoHeaderR.setEnabled(False)
-		self.textoCamposR.setEnabled(False)
-		self.textoInformacionR.setEnabled(False)
-		self.textoTrailerR.setEnabled(False)
-		self.textoIndicador1R.setEnabled(False)
-		self.textoACKR.setEnabled(False)
-		self.textoENQR.setEnabled(False)
-		self.textoCTRR.setEnabled(False)
-		self.textoDATR.setEnabled(False)
-		self.textoPPTR.setEnabled(False)
-		self.textoLPTR.setEnabled(False)
-		self.textoNUMR.setEnabled(False)
-		self.textoInfoR.setEnabled(False)
-		self.textoIndicador2R.setEnabled(False)
-	
+			
 		#boton de respuesta
 		self.botonRespuesta = QPushButton("RESPONDER")
 		
@@ -249,8 +225,6 @@ class Ventana(QWidget):
 		fila10 = QHBoxLayout()
 		fila11 = QHBoxLayout()
 		cajaReceptor = QVBoxLayout()
-		
-		
 		
 		fila7_1A = QHBoxLayout()
 		fila7_1 = QVBoxLayout()
@@ -297,8 +271,8 @@ class Ventana(QWidget):
 		fila9_5.addWidget(self.textoDATR)
 		fila9_6.addWidget(labelPPTR)
 		fila9_6.addWidget(self.textoPPTR)
-		fila9_7.addWidget(labelLPTR)
-		fila9_7.addWidget(self.textoLPTR)
+		fila9_7.addWidget(labelLPRR)
+		fila9_7.addWidget(self.textoLPRR)
 		fila9_8.addWidget(labelNUMR)
 		fila9_8.addWidget(self.textoNUMR)
 		fila9_9.addWidget(labelInfoR)
@@ -333,30 +307,139 @@ class Ventana(QWidget):
 		#------------------------------------#
 		
 		
-		#agregar el segundo nivel de layout al panel OK
+		#agregar el segundo nivel de layout al panel
 		panelTransmisor = QFrame(self)
 		panelTransmisor.setFrameShape(QFrame.StyledPanel)
 		panelTransmisor.setLayout(cajaTransmisor)
 		
-		#agregar el segundo nivel de layout al panel OK
+		#agregar el segundo nivel de layout al panel
 		panelReceptor = QFrame(self)
 		panelReceptor.setFrameShape(QFrame.StyledPanel)
 		panelReceptor.setLayout(cajaReceptor)
 		
-		#agregar el panel al separador OK
+		#agregar el panel al separador
 		separador = QSplitter(Qt.Vertical)
 		separador.addWidget(panelTransmisor)
 		separador.addWidget(panelReceptor)
 		
-		#agregar el separador al primer layout OK
+		#agregar el separador al primer layout
 		caja = QVBoxLayout(self)
 		caja.addWidget(separador)
 		
-		#agregar el layout a la ventana OK
+		#agregar el layout a la ventana
 		self.setLayout(caja)
 		
 		self.setFixedSize(800, 500)
+		self._configurar()
 		self.show()
 		
+	def _configurar(self):
 		
+		self.textoIndicador1T.setEnabled(False)
+		self.textoACKT.setEnabled(False)
+		self.textoENQT.setEnabled(False)
+		self.textoCTRT.setEnabled(False)
+		self.textoDATT.setEnabled(False)
+		self.textoPPTT.setEnabled(False)
+		self.textoLPRT.setEnabled(False)
+		self.textoNUMT.setEnabled(False)
+		self.textoInfoT.setEnabled(False)
+		self.textoIndicador2T.setEnabled(False)
+		
+		self.textoIndicador1T.setText(self.trama.INDICADOR)
+		self.textoACKT.setText(self.trama.ACK)
+		self.textoENQT.setText(self.trama.ENQ)
+		self.textoCTRT.setText(self.trama.CTR)
+		self.textoDATT.setText(self.trama.DAT)
+		self.textoPPTT.setText(self.trama.PPT)
+		self.textoLPRT.setText(self.trama.LPR)
+		self.textoNUMT.setText(self.trama.NUM)
+		self.textoInfoT.setText(self.trama.INFO)
+		self.textoIndicador2T.setText(self.trama.INDICADOR)
+		
+		self.textoHeaderR.setEnabled(False)
+		self.textoCamposR.setEnabled(False)
+		self.textoInformacionR.setEnabled(False)
+		self.textoTrailerR.setEnabled(False)
+		self.textoIndicador1R.setEnabled(False)
+		self.textoACKR.setEnabled(False)
+		self.textoENQR.setEnabled(False)
+		self.textoCTRR.setEnabled(False)
+		self.textoDATR.setEnabled(False)
+		self.textoPPTR.setEnabled(False)
+		self.textoLPRR.setEnabled(False)
+		self.textoNUMR.setEnabled(False)
+		self.textoInfoR.setEnabled(False)
+		self.textoIndicador2R.setEnabled(False)
+		self.textoMensajeR.setEnabled(False)
+		
+		self.checkACK.setEnabled(False)
+		self.checkENQ.setEnabled(False)
+		self.checkPPT.setEnabled(False)
+		self.checkLPR.setEnabled(False)
+		
+		self.checkACK.stateChanged.connect(self._seleccionarACK)
+		self.checkENQ.stateChanged.connect(self._seleccionarENQ)
+		self.checkCTR.stateChanged.connect(self._seleccionarCTR)
+		self.checkDAT.stateChanged.connect(self._seleccionarDAT)
+		self.checkPPT.stateChanged.connect(self._seleccionarPPT)
+		self.checkLPR.stateChanged.connect(self._seleccionarLPR)
+		
+	def _seleccionarACK(self, estado):
+		if estado == Qt.Checked:
+			self.textoACKT.setText("1")
+			self.checkPPT.setChecked(False)
+			self.checkLPR.setChecked(False)
+		else:
+			self.textoACKT.setText("0")
+		
+	def _seleccionarENQ(self, estado):
+		if estado == Qt.Checked:
+			self.textoENQT.setText("1")
+		else:
+			self.textoENQT.setText("0")
+		
+	def _seleccionarCTR(self, estado):
+		if estado == Qt.Checked:
+			self.textoCTRT.setText("1")
+			self.checkDAT.setChecked(False)
+			self.checkACK.setEnabled(True)
+			self.checkPPT.setEnabled(True)
+			self.checkLPR.setEnabled(True)
+		else:
+			self.textoCTRT.setText("0")
+			self.checkACK.setChecked(False)
+			self.checkPPT.setChecked(False)
+			self.checkLPR.setChecked(False)
+			self.checkACK.setEnabled(False)
+			self.checkPPT.setEnabled(False)
+			self.checkLPR.setEnabled(False)
+			self.checkENQ.setEnabled(False)
+			
+	def _seleccionarDAT(self, estado):
+		if estado == Qt.Checked:
+			self.textoDATT.setText("1")
+			self.checkCTR.setChecked(False)
+			self.checkENQ.setEnabled(True)
+		else:
+			self.textoDATT.setText("0")
+			self.checkENQ.setChecked(False)
+			self.checkENQ.setEnabled(False)
+			
+	def _seleccionarPPT(self, estado):
+		if estado == Qt.Checked:
+			self.textoPPTT.setText("1")
+			self.checkACK.setChecked(False)
+			self.checkLPR.setChecked(False)
+		else:
+			self.textoPPTT.setText("0")
+			
+	def _seleccionarLPR(self, estado):
+		if estado == Qt.Checked:
+			self.textoLPRT.setText("1")
+			self.checkACK.setChecked(False)
+			self.checkPPT.setChecked(False)
+		else:
+			self.textoLPRT.setText("0")
+			
 		

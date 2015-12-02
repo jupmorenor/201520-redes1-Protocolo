@@ -2,9 +2,10 @@
 Created on 22/11/2015
 @author: Juan Pablo Moreno - 20111020059
 '''
-from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QCheckBox, QPushButton
+from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout 
+from PyQt4.QtGui import QLabel, QLineEdit, QCheckBox, QPushButton, QInputDialog
 from PyQt4.QtCore import Qt
-from nucleo import Trama
+from nucleo import Trama, Transmisor
 
 
 class Ventana(QWidget):
@@ -14,47 +15,11 @@ class Ventana(QWidget):
 
 	def __init__(self):
 		super(Ventana, self).__init__()
-		self._inicializar()
 		
-		
-	def _inicializar(self):
-		self.setWindowTitle("Protocolo de transmision de datos")
-		self.trama = Trama()
-		
-		#------------------------------------#
-		#		ELEMENTOS DEL TRANSMISOR	 #
-		#------------------------------------#
-		
-		#Etiquetas transmisor
-		tituloT = QLabel("TRANSMISOR")
-		labelMensajeT = QLabel("Mensaje a transmitir:")
-		labelFramesT = QLabel("Numero de frames:")
-		labelIndicador1T = QLabel("INDICADOR")
-		labelACKT = QLabel("ACK")
-		labelENQT = QLabel("ENQ")
-		labelCTRT = QLabel("CTR")
-		labelDATT = QLabel("DAT")
-		labelPPTT = QLabel("PPT")
-		labelLPRT = QLabel("LPR")
-		labelNUMT = QLabel("NUM")
-		labelInfoT = QLabel("INFORMACION")
-		labelIndicador2T = QLabel("INDICADOR")
 		self.labelSemanticaT = QLabel("Semantica: ")
-		
-		tituloT.adjustSize()
-		labelMensajeT.adjustSize()
-		labelFramesT.adjustSize()
-		labelIndicador1T.adjustSize()
-		labelACKT.adjustSize()
-		labelENQT.adjustSize()
-		labelCTRT.adjustSize()
-		labelDATT.adjustSize()
-		labelPPTT.adjustSize()
-		labelLPRT.adjustSize()
-		labelNUMT.adjustSize()
-		labelInfoT.adjustSize()
-		labelIndicador2T.adjustSize()
+		self.labelSemanticaR = QLabel("Semantica: ")
 		self.labelSemanticaT.adjustSize()
+		self.labelSemanticaR.adjustSize()
 		
 		#campos de texto transmisor
 		self.textoMensajeT = QLineEdit()
@@ -79,8 +44,68 @@ class Ventana(QWidget):
 		self.checkLPR = QCheckBox()
 		
 		#boton de transmision
-		self.botonTransmisor = QPushButton("ENVIAR")	
+		self.botonTransmisor = QPushButton("ENVIAR")
 		
+		#campos de texto receptor
+		self.textoHeaderR = QLineEdit()
+		self.textoCamposR = QLineEdit()
+		self.textoInformacionR = QLineEdit()
+		self.textoTrailerR = QLineEdit()
+		self.textoIndicador1R = QLineEdit()
+		self.textoACKR = QLineEdit()
+		self.textoENQR = QLineEdit()
+		self.textoCTRR = QLineEdit()
+		self.textoDATR = QLineEdit()
+		self.textoPPTR = QLineEdit()
+		self.textoLPRR = QLineEdit()
+		self.textoNUMR = QLineEdit()
+		self.textoInfoR = QLineEdit()
+		self.textoIndicador2R = QLineEdit()
+		self.textoMensajeR = QLineEdit()
+			
+		#boton de respuesta
+		self.botonRespuesta = QPushButton("RESPONDER")
+		self.trama = Trama()
+		self.transmisor = Transmisor()
+		self._inicializar()
+		
+		
+	def _inicializar(self):
+		self.setWindowTitle("Protocolo de transmision de datos")
+		
+		#------------------------------------#
+		#		ELEMENTOS DEL TRANSMISOR	 #
+		#------------------------------------#
+		
+		#Etiquetas transmisor
+		tituloT = QLabel("TRANSMISOR")
+		labelMensajeT = QLabel("Mensaje a transmitir:")
+		labelFramesT = QLabel("Numero de frames:")
+		labelIndicador1T = QLabel("INDICADOR")
+		labelACKT = QLabel("ACK")
+		labelENQT = QLabel("ENQ")
+		labelCTRT = QLabel("CTR")
+		labelDATT = QLabel("DAT")
+		labelPPTT = QLabel("PPT")
+		labelLPRT = QLabel("LPR")
+		labelNUMT = QLabel("NUM")
+		labelInfoT = QLabel("INFORMACION")
+		labelIndicador2T = QLabel("INDICADOR")
+				
+		tituloT.adjustSize()
+		labelMensajeT.adjustSize()
+		labelFramesT.adjustSize()
+		labelIndicador1T.adjustSize()
+		labelACKT.adjustSize()
+		labelENQT.adjustSize()
+		labelCTRT.adjustSize()
+		labelDATT.adjustSize()
+		labelPPTT.adjustSize()
+		labelLPRT.adjustSize()
+		labelNUMT.adjustSize()
+		labelInfoT.adjustSize()
+		labelIndicador2T.adjustSize()
+			
 		#agregar los elementos al segundo nivel de layout
 		fila1 = QHBoxLayout()
 		fila2 = QHBoxLayout()
@@ -174,7 +199,6 @@ class Ventana(QWidget):
 		labelNUMR = QLabel("NUM")
 		labelInfoR = QLabel("INFORMACION")
 		labelIndicador2R = QLabel("INDICADOR")
-		self.labelSemanticaR = QLabel("Semantica: ")
 		labelMensajeR = QLabel("Mensaje recibido:")
 		
 		tituloR.adjustSize()
@@ -193,29 +217,8 @@ class Ventana(QWidget):
 		labelNUMR.adjustSize()
 		labelInfoR.adjustSize()
 		labelIndicador2R.adjustSize()
-		self.labelSemanticaR.adjustSize()
 		labelMensajeR.adjustSize()
-		
-		#campos de texto receptor
-		self.textoHeaderR = QLineEdit()
-		self.textoCamposR = QLineEdit()
-		self.textoInformacionR = QLineEdit()
-		self.textoTrailerR = QLineEdit()
-		self.textoIndicador1R = QLineEdit()
-		self.textoACKR = QLineEdit()
-		self.textoENQR = QLineEdit()
-		self.textoCTRR = QLineEdit()
-		self.textoDATR = QLineEdit()
-		self.textoPPTR = QLineEdit()
-		self.textoLPRR = QLineEdit()
-		self.textoNUMR = QLineEdit()
-		self.textoInfoR = QLineEdit()
-		self.textoIndicador2R = QLineEdit()
-		self.textoMensajeR = QLineEdit()
-			
-		#boton de respuesta
-		self.botonRespuesta = QPushButton("RESPONDER")
-		
+				
 		#agregar los elementos al segundo nivel de layout
 		fila5 = QHBoxLayout()
 		fila6 = QHBoxLayout()
@@ -305,8 +308,7 @@ class Ventana(QWidget):
 		cajaReceptor.addLayout(fila11)
 		
 		#------------------------------------#
-		
-		
+				
 		#agregar el segundo nivel de layout al panel
 		panelTransmisor = QFrame(self)
 		panelTransmisor.setFrameShape(QFrame.StyledPanel)
@@ -332,6 +334,7 @@ class Ventana(QWidget):
 		self.setFixedSize(800, 500)
 		self._configurar()
 		self.show()
+		self.crear_conexion()
 		
 	def _configurar(self):
 		
@@ -435,6 +438,7 @@ class Ventana(QWidget):
 			self.textoPPTT.setText("0")
 			
 	def _seleccionarLPR(self, estado):
+		
 		if estado == Qt.Checked:
 			self.textoLPRT.setText("1")
 			self.checkACK.setChecked(False)
@@ -442,4 +446,13 @@ class Ventana(QWidget):
 		else:
 			self.textoLPRT.setText("0")
 			
+	def crear_conexion(self):
+		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", ["Servidor", "Cliente"])
+		if str(tipo[0]) == "Servidor":
+			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
+			self.transmisor.conectar_servidor(port[0])
+		elif str(tipo[0]) == "Cliente":
+			host = QInputDialog.getText(self, "ingrese host", "Host")
+			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
+			self.transmisor.conectar_cliente((str(host[0]), port[0]))
 		

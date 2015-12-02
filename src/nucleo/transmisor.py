@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 '''
 Created on 22/11/2015
 @author: Juan Pablo Moreno - 20111020059
@@ -10,7 +11,18 @@ class Transmisor(object):
 	mediante la encapsulacion de un socket
 	'''
 
-	def __init__(self, host):
+	def __init__(self):
 		self.conector = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.conector.bind(host)
+	
+	def conectar_servidor(self, port):
+		self.conector.bind((socket.gethostname(), port))
+	
+	def conectar_cliente(self, host):
+		self.conector.connect(host)
 		
+	def enviar(self, mensaje):
+		pass
+	
+	def recibir(self):
+		mensaje = ''
+		return mensaje

@@ -29,6 +29,21 @@ class Trama(object):
 		self.NUM="0"
 		self.INFO=""
 		
+	def esACK(self):
+		return self.ACK=="1"
+	
+	def esENQ(self):
+		return self.ENQ=="1"
+	
+	def esPPT(self):
+		return self.PPT=="1"
+	
+	def esLPR(self):
+		return self.LPR=="1"
+	
+	def esDAT(self):
+		return (self.DAT=="1" and self.ENQ=="0")
+		
 	def __call__(self):
 		return self.INDICADOR+self.ACK+self.ENQ+self.CTR+self.DAT+self.PPT+\
 	self.LPR+self.NUM+self.INFO+self.INDICADOR

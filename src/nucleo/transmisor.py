@@ -16,6 +16,7 @@ class Transmisor(object):
 	
 	def conectar_servidor(self, port):
 		self.conector.bind((socket.gethostname(), port))
+		self.conector.listen(5)
 	
 	def conectar_cliente(self, host):
 		self.conector.connect(host)

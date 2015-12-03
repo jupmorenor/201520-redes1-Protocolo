@@ -16,6 +16,9 @@ class Ventana(QWidget):
 	def __init__(self):
 		super(Ventana, self).__init__()
 		
+		self._CLIENTE = "Cliente"
+		self._SERVIDOR = "Servidor"
+		
 		self.labelSemanticaT = QLabel("Semantica: ")
 		self.labelSemanticaR = QLabel("Semantica: ")
 		self.labelSemanticaT.adjustSize()
@@ -447,12 +450,14 @@ class Ventana(QWidget):
 			self.textoLPRT.setText("0")
 			
 	def crear_conexion(self):
-		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", ["Servidor", "Cliente"])
-		if str(tipo[0]) == "Servidor":
+		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", [self._SERVIDOR, self._CLIENTE])
+		if str(tipo[0]) == self._SERVIDOR:
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
 			self.transmisor.conectar_servidor(port[0])
-		elif str(tipo[0]) == "Cliente":
+			self.setWindowTitle("Protocolo de transmision de datos  --" + self._SERVIDOR)
+		elif str(tipo[0]) == self._CLIENTE:
 			host = QInputDialog.getText(self, "ingrese host", "Host")
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
 			self.transmisor.conectar_cliente((str(host[0]), port[0]))
+			self.setWindowTitle("Protocolo de transmision de datos  --" + self._CLIENTE)
 		

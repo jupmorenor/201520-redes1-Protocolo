@@ -47,6 +47,10 @@ class Trama(object):
 	def __call__(self):
 		return self.INDICADOR+self.ACK+self.ENQ+self.CTR+self.DAT+self.PPT+\
 	self.LPR+self.NUM+self.INFO+self.INDICADOR
+	
+	def __len__(self):
+		return len(self())
 		
 if __name__ =='__main__':
 	print Trama()()	
+	print len(Trama())

@@ -2,8 +2,8 @@
 Created on 22/11/2015
 @author: Juan Pablo Moreno - 20111020059
 '''
-from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout 
-from PyQt4.QtGui import QLabel, QLineEdit, QCheckBox, QPushButton, QInputDialog
+from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt4.QtGui import QLineEdit, QCheckBox, QPushButton, QInputDialog, QMessageBox
 from PyQt4.QtCore import Qt
 from nucleo import Trama, Transmisor
 
@@ -334,7 +334,7 @@ class Ventana(QWidget):
 		#agregar el layout a la ventana
 		self.setLayout(caja)
 		
-		self.setFixedSize(800, 500)
+		self.setFixedSize(800, 400)
 		self._configurar()
 		self.show()
 		self.crear_conexion()
@@ -390,6 +390,8 @@ class Ventana(QWidget):
 		self.checkDAT.stateChanged.connect(self._seleccionarDAT)
 		self.checkPPT.stateChanged.connect(self._seleccionarPPT)
 		self.checkLPR.stateChanged.connect(self._seleccionarLPR)
+		self.botonTransmisor.clicked.connect(self._enviar_mensaje)
+		self.botonRespuesta.clicked.connect(self._enviar_respuesta)
 		
 	def _seleccionarACK(self, estado):
 		if estado == Qt.Checked:
@@ -450,14 +452,24 @@ class Ventana(QWidget):
 			self.textoLPRT.setText("0")
 			
 	def crear_conexion(self):
-		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", [self._SERVIDOR, self._CLIENTE])
+		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", ["" ,self._SERVIDOR, self._CLIENTE])
 		if str(tipo[0]) == self._SERVIDOR:
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
-			self.transmisor.conectar_servidor(port[0])
+			self.transmisor.crear_servidor(port[0])
+			if self.transmisor.conectar_servidor():
+				resp = QMessageBox.information(self, "Conectado", "Se ha establecido la conexion con el cliente")
 			self.setWindowTitle("Protocolo de transmision de datos  --" + self._SERVIDOR)
 		elif str(tipo[0]) == self._CLIENTE:
 			host = QInputDialog.getText(self, "ingrese host", "Host")
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
 			self.transmisor.conectar_cliente((str(host[0]), port[0]))
 			self.setWindowTitle("Protocolo de transmision de datos  --" + self._CLIENTE)
+		else:
+			self.destroy()
+			
+	def _enviar_mensaje(self):
+		self.transmisor.enviar(self.trama())
+		
+	def _enviar_respuesta(self):
+		print self.transmisor.recibir()
 		

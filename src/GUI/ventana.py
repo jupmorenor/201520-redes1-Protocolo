@@ -2,7 +2,7 @@
 Created on 22/11/2015
 @author: Juan Pablo Moreno - 20111020059
 '''
-from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit
+from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel
 from PyQt4.QtGui import QLineEdit, QCheckBox, QPushButton, QInputDialog, QMessageBox
 from PyQt4.QtCore import Qt
 from nucleo import Trama, Transmisor
@@ -30,7 +30,7 @@ class Ventana(QWidget):
 		
 		#campos de texto transmisor
 		self.textoMensajeT = QLineEdit()
-		self.textoFramesT = QLineEdit()
+		self.textoFramesT = QLineEdit("1")
 		self.textoIndicador1T = QLineEdit()
 		self.textoACKT = QLineEdit()
 		self.textoENQT = QLineEdit()
@@ -54,10 +54,6 @@ class Ventana(QWidget):
 		self.botonTransmisor = QPushButton("ENVIAR")
 		
 		#campos de texto receptor
-		self.textoHeaderR = QLineEdit()
-		self.textoCamposR = QLineEdit()
-		self.textoInformacionR = QLineEdit()
-		self.textoTrailerR = QLineEdit()
 		self.textoIndicador1R = QLineEdit()
 		self.textoACKR = QLineEdit()
 		self.textoENQR = QLineEdit()
@@ -68,15 +64,15 @@ class Ventana(QWidget):
 		self.textoNUMR = QLineEdit()
 		self.textoInfoR = QLineEdit()
 		self.textoIndicador2R = QLineEdit()
-		self.textoMensajeR = QTextEdit()
+		self.textoMensajeR = QLineEdit()
 			
 		#boton de respuesta
 		self.botonRecibir = QPushButton("RECIBIR")
 		self.trama = Trama()
+		self.trama_anterior = None
 		self.transmisor = Transmisor()
 		self._inicializar()
-		
-		
+				
 	def _inicializar(self):
 		self.setWindowTitle("Protocolo de transmision de datos")
 		
@@ -192,9 +188,6 @@ class Ventana(QWidget):
 		#Etiquetas receptor
 		tituloR = QLabel("RECEPCION")
 		labelFrameR = QLabel("Trama recibida:")
-		labelHeaderR = QLabel("HEADER")
-		labelInformacionR = QLabel("INFORMACION")
-		labelTrailerR = QLabel("TRAILER")
 		labelRespuestaR = QLabel("Recibido: ")
 		labelIndicador1R = QLabel("INDICADOR")
 		labelACKR = QLabel("ACK")
@@ -210,9 +203,6 @@ class Ventana(QWidget):
 		
 		tituloR.adjustSize()
 		labelFrameR.adjustSize()
-		labelHeaderR.adjustSize()
-		labelInformacionR.adjustSize()
-		labelTrailerR.adjustSize()
 		labelRespuestaR.adjustSize()
 		labelIndicador1R.adjustSize()
 		labelACKR.adjustSize()
@@ -229,32 +219,14 @@ class Ventana(QWidget):
 		#agregar los elementos al segundo nivel de layout
 		fila5 = QHBoxLayout()
 		fila6 = QHBoxLayout()
-		fila7 = QHBoxLayout()
 		fila8 = QHBoxLayout()
 		fila9 = QHBoxLayout()
 		fila10 = QHBoxLayout()
 		fila11 = QHBoxLayout()
 		cajaReceptor = QVBoxLayout()
-		
-		fila7_1A = QHBoxLayout()
-		fila7_1 = QVBoxLayout()
-		fila7_2 = QVBoxLayout()
-		fila7_3 = QVBoxLayout()
-		
-		fila7_1A.addWidget(self.textoHeaderR)
-		fila7_1A.addWidget(self.textoCamposR)
-		fila7_1.addLayout(fila7_1A)
-		fila7_1.addWidget(labelHeaderR)	
-		fila7_2.addWidget(self.textoInformacionR)
-		fila7_2.addWidget(labelInformacionR)
-		fila7_3.addWidget(self.textoTrailerR)
-		fila7_3.addWidget(labelTrailerR)
-		
+				
 		fila5.addWidget(tituloR)
 		fila6.addWidget(labelFrameR)
-		fila7.addLayout(fila7_1)
-		fila7.addLayout(fila7_2)
-		fila7.addLayout(fila7_3)
 		fila8.addWidget(labelRespuestaR)
 		
 		#fila9
@@ -308,7 +280,6 @@ class Ventana(QWidget):
 		
 		cajaReceptor.addLayout(fila5)
 		cajaReceptor.addLayout(fila6)
-		cajaReceptor.addLayout(fila7)
 		cajaReceptor.addLayout(fila8)
 		cajaReceptor.addLayout(fila9)
 		cajaReceptor.addLayout(fila10)
@@ -356,10 +327,6 @@ class Ventana(QWidget):
 		self.textoInfoT.setEnabled(False)
 		self.textoIndicador2T.setEnabled(False)
 		
-		self.textoHeaderR.setEnabled(False)
-		self.textoCamposR.setEnabled(False)
-		self.textoInformacionR.setEnabled(False)
-		self.textoTrailerR.setEnabled(False)
 		self.textoIndicador1R.setEnabled(False)
 		self.textoACKR.setEnabled(False)
 		self.textoENQR.setEnabled(False)
@@ -466,61 +433,74 @@ class Ventana(QWidget):
 			self.destroy()
 			
 	def _enviar_mensaje(self):
+		self.trama_anterior = self.trama
 		if not self.pasos:
-			if self.trama.esPPT():
+			if self.trama.esPPT():			
 				self._generar_trama()
 				if self.trama.esLPR():
 					self.pasos.append("LPR")
 					self.transmisor.enviar(self.trama())
+					self._mostrar_trama(self._SERVIDOR)
 				else:
 					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+					self.trama = self.trama_anterior
 			elif self.trama.esNull():
 				self._generar_trama()
 				if self.trama.esPPT():
 					self.pasos.append("PPT")
 					self.transmisor.enviar(self.trama())
+					self._mostrar_trama(self._SERVIDOR)
 				else:
 					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+					self.trama = self.trama_anterior
+			else:
+				err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
 		elif "PPT" in self.pasos:
-			cant = int(self.textoFramesT.text())
-			if not self.mensaje:
-				self._preparar_mensaje(cant)
 			if self.trama.esLPR() or self.trama.esACK():
+				cant = int(self.textoFramesT.text())
+				if not self.mensaje:
+					self._preparar_mensaje(cant)
 				self._generar_trama()
 				if self.trama.esDAT():
 					if len(self.mensaje)>1:
 						self.trama.INFO = self.mensaje.pop(0)
 						self.trama.NUM = str(cant - len(self.mensaje))
 						self.transmisor.enviar(self.trama())
+						self._mostrar_trama(self._SERVIDOR)
 					else:
 						err = QMessageBox.information(self, "Error", "Ultima trama, envie ENQ")
+						self.trama = self.trama_anterior
 						del err
 				elif self.trama.esENQ():
 					if len(self.mensaje)>1:
 						err = QMessageBox.information(self, "Error", "Faltan mas tramas, envie DAT")
+						self.trama = self.trama_anterior
 						del err
 					else:
 						self.trama.INFO = self.mensaje.pop(0)
 						self.trama.NUM = str(cant)
 						self.transmisor.enviar(self.trama())
 						self.pasos.append("ENQ")
+						self._mostrar_trama(self._SERVIDOR)
+			else:
+				err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
 		elif "LPR" in self.pasos:
-			if self.trama.esDAT():
+			if self.trama.esDAT() or self.trama.esENQ():
 				self._generar_trama()
 				if self.trama.esACK():
 					self.trama.INFO=""
 					self.transmisor.enviar(self.trama())
+					self._mostrar_trama(self._SERVIDOR)
 				else:
 					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+					self.trama = self.trama_anterior
 					del err
-		
-		elif "ENQ" in self.pasos:
-			if self.trama.esACK():
-				err = QMessageBox.information(self, "Terminado", "El mensaje se ha terminado")		
-		self._actualizar_semantica(self._SERVIDOR)
+			else:
+				err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
 
 	def _recibir_mensaje(self):
-		msg =  self.transmisor.recibir()
+		self.trama_anterior = self.trama
+		msg = self.transmisor.recibir()
 		if len(msg)!=0:
 			datos = list(msg.split(self.trama.INDICADOR)[1])
 			self.trama.ACK = datos.pop(0)
@@ -532,8 +512,14 @@ class Ventana(QWidget):
 			self.trama.NUM = datos.pop(0)
 			self.trama.INFO = "".join(datos)
 			self._mostrar_trama(self._CLIENTE)
-			if self.trama.esDAT() or self.trama.esENQ():
-				self.textoMensajeR.append(self.trama.INFO)
+			if self.trama.esDAT():
+				self.textoMensajeR.setText(self.textoMensajeR.text()+self.trama.INFO)
+			elif self.trama.esENQ():
+				self.textoMensajeR.setText(self.textoMensajeR.text()+self.trama.INFO)
+				self.pasos.append("ENQ")
+		else:
+			err = QMessageBox.information(self, "Error", "Mensaje vacio")
+			del err
 
 	def _preparar_mensaje(self, cant):
 		self.textoMensajeT.setEnabled(False)

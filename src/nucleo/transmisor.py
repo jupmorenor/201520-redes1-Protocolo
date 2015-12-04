@@ -39,9 +39,9 @@ class Transmisor(object):
 	def recibir(self):
 		mensaje = ""
 		if self._socket is None:
-			mensaje += self._conector.recv(30)
+			mensaje += self._conector.recv(32)
 		else:
-			mensaje = self._socket.recv(30)
+			mensaje = self._socket.recv(32)
 		return mensaje
 	
 	def terminar(self):

@@ -2,7 +2,7 @@
 Created on 22/11/2015
 @author: Juan Pablo Moreno - 20111020059
 '''
-from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel
+from PyQt4.QtGui import QWidget, QFrame, QSplitter, QHBoxLayout, QVBoxLayout, QLabel, QTextEdit
 from PyQt4.QtGui import QLineEdit, QCheckBox, QPushButton, QInputDialog, QMessageBox
 from PyQt4.QtCore import Qt
 from nucleo import Trama, Transmisor
@@ -18,6 +18,10 @@ class Ventana(QWidget):
 		
 		self._CLIENTE = "Cliente"
 		self._SERVIDOR = "Servidor"
+		
+		self.rol = ""
+		self.pasos = []
+		self.mensaje = []
 		
 		self.labelSemanticaT = QLabel("Semantica: ")
 		self.labelSemanticaR = QLabel("Semantica: ")
@@ -64,7 +68,7 @@ class Ventana(QWidget):
 		self.textoNUMR = QLineEdit()
 		self.textoInfoR = QLineEdit()
 		self.textoIndicador2R = QLineEdit()
-		self.textoMensajeR = QLineEdit()
+		self.textoMensajeR = QTextEdit()
 			
 		#boton de respuesta
 		self.botonRecibir = QPushButton("RECIBIR")
@@ -191,7 +195,7 @@ class Ventana(QWidget):
 		labelHeaderR = QLabel("HEADER")
 		labelInformacionR = QLabel("INFORMACION")
 		labelTrailerR = QLabel("TRAILER")
-		labelRespuestaR = QLabel("Respuesta: ")
+		labelRespuestaR = QLabel("Recibido: ")
 		labelIndicador1R = QLabel("INDICADOR")
 		labelACKR = QLabel("ACK")
 		labelENQR = QLabel("ENQ")
@@ -444,38 +448,100 @@ class Ventana(QWidget):
 			
 	def crear_conexion(self):
 		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", ["" ,self._SERVIDOR, self._CLIENTE])
-		if str(tipo[0]) == self._SERVIDOR:
+		self.rol = str(tipo[0])
+		self.setWindowTitle("Protocolo de transmision de datos  --" + self.rol)
+		if self.rol == self._SERVIDOR:
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
 			nom = self.transmisor.crear_servidor(port[0])
 			msg = QMessageBox.information(self, "Servidor", "El nombre del servidor es: " + nom)
+			del msg
 			if self.transmisor.conectar_servidor():
 				resp = QMessageBox.information(self, "Conectado", "Se ha establecido la conexion con el cliente")
-			self.setWindowTitle("Protocolo de transmision de datos  --" + self._SERVIDOR)
-		elif str(tipo[0]) == self._CLIENTE:
+				del resp
+		elif self.rol == self._CLIENTE:
 			host = QInputDialog.getText(self, "ingrese host", "Host")
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
 			self.transmisor.conectar_cliente((str(host[0]), port[0]))
-			self.setWindowTitle("Protocolo de transmision de datos  --" + self._CLIENTE)
 		else:
 			self.destroy()
 			
 	def _enviar_mensaje(self):
-		self._generar_trama()
-		self._actualizar_semantica(self._SERVIDOR)
-		self.transmisor.enviar(self.trama())
+		if not self.pasos:
+			if self.trama.esPPT():
+				self._generar_trama()
+				if self.trama.esLPR():
+					self.pasos.append("LPR")
+					self.transmisor.enviar(self.trama())
+				else:
+					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+			elif self.trama.esNull():
+				self._generar_trama()
+				if self.trama.esPPT():
+					self.pasos.append("PPT")
+					self.transmisor.enviar(self.trama())
+				else:
+					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+		elif "PPT" in self.pasos:
+			cant = int(self.textoFramesT.text())
+			if not self.mensaje:
+				self._preparar_mensaje(cant)
+			if self.trama.esLPR() or self.trama.esACK():
+				self._generar_trama()
+				if self.trama.esDAT():
+					if len(self.mensaje)>1:
+						self.trama.INFO = self.mensaje.pop(0)
+						self.trama.NUM = cant - len(self.mensaje)
+						self.transmisor.enviar(self.trama())
+					else:
+						err = QMessageBox.information(self, "Error", "Ultima trama, envie ENQ")
+						del err
+				elif self.trama.esENQ():
+					if len(self.mensaje)>1:
+						err = QMessageBox.information(self, "Error", "Faltan mas tramas, envie DAT")
+						del err
+					else:
+						self.trama.INFO = self.mensaje.pop(0)
+						self.trama.NUM = cant
+						self.transmisor.enviar(self.trama())
+						self.pasos.append("ENQ")
+		elif "LPR" in self.pasos:
+			if self.trama.esDAT():
+				self._generar_trama()
+				if self.trama.esACK():
+					self.trama.INFO=""
+					self.transmisor.enviar(self.trama())
+				else:
+					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+					del err
 		
+		elif "ENQ" in self.pasos:
+			if self.trama.esACK():
+				err = QMessageBox.information(self, "Terminado", "El mensaje se ha terminado")		
+		self._actualizar_semantica(self._SERVIDOR)
+
 	def _recibir_mensaje(self):
 		msg =  self.transmisor.recibir()
-		datos = list(msg.split(self.trama.INDICADOR)[1])
-		self.trama.ACK = datos.pop(0)
-		self.trama.ENQ = datos.pop(0)
-		self.trama.CTR = datos.pop(0)
-		self.trama.DAT = datos.pop(0)
-		self.trama.PPT = datos.pop(0)
-		self.trama.LPR = datos.pop(0)
-		self.trama.NUM = datos.pop(0)
-		self.trama.INFO = "".join(datos)
-		self._mostrar_trama(self._CLIENTE)
+		if len(msg)!=0:
+			datos = list(msg.split(self.trama.INDICADOR)[1])
+			self.trama.ACK = datos.pop(0)
+			self.trama.ENQ = datos.pop(0)
+			self.trama.CTR = datos.pop(0)
+			self.trama.DAT = datos.pop(0)
+			self.trama.PPT = datos.pop(0)
+			self.trama.LPR = datos.pop(0)
+			self.trama.NUM = datos.pop(0)
+			self.trama.INFO = "".join(datos)
+			self._mostrar_trama(self._CLIENTE)
+			if self.trama.esDAT() or self.trama.esENQ():
+				self.textoMensajeR.append(self.trama.INFO)
+
+	def _preparar_mensaje(self, cant):
+		self.textoMensajeT.setEnabled(False)
+		self.textoFramesT.setEnabled(False)
+		men = str(self.textoMensajeT.text())
+		tam = len(men)/cant + 1
+		for i in range(cant):
+			self.mensaje.append(men[(i*tam):(i+1)*tam])
 		
 		
 	def _generar_trama(self):
@@ -512,6 +578,8 @@ class Ventana(QWidget):
 			self.textoInfoT.setText(self.trama.INFO)
 			self.textoIndicador2T.setText(self.trama.INDICADOR)
 		self._actualizar_semantica(tipo)
+	
+	
 	
 	def _actualizar_semantica(self, tipo):
 		if tipo == self._CLIENTE:

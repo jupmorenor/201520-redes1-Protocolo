@@ -43,6 +43,9 @@ class Trama(object):
 	
 	def esDAT(self):
 		return (self.DAT=="1" and self.ENQ=="0")
+	
+	def esNull(self):
+		return not (self.esACK() or self.esDAT() or self.esENQ() or self.esLPR() or self.esPPT())
 		
 	def __call__(self):
 		return self.INDICADOR+self.ACK+self.ENQ+self.CTR+self.DAT+self.PPT+\

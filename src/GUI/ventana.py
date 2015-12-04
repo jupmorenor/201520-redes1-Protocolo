@@ -67,7 +67,7 @@ class Ventana(QWidget):
 		self.textoMensajeR = QLineEdit()
 			
 		#boton de respuesta
-		self.botonRespuesta = QPushButton("RESPONDER")
+		self.botonRecibir = QPushButton("RECIBIR")
 		self.trama = Trama()
 		self.transmisor = Transmisor()
 		self._inicializar()
@@ -81,7 +81,7 @@ class Ventana(QWidget):
 		#------------------------------------#
 		
 		#Etiquetas transmisor
-		tituloT = QLabel("TRANSMISOR")
+		tituloT = QLabel("TRANSMISION")
 		labelMensajeT = QLabel("Mensaje a transmitir:")
 		labelFramesT = QLabel("Numero de frames:")
 		labelIndicador1T = QLabel("INDICADOR")
@@ -186,7 +186,7 @@ class Ventana(QWidget):
 		#------------------------------------#
 		
 		#Etiquetas receptor
-		tituloR = QLabel("RECEPTOR")
+		tituloR = QLabel("RECEPCION")
 		labelFrameR = QLabel("Trama recibida:")
 		labelHeaderR = QLabel("HEADER")
 		labelInformacionR = QLabel("INFORMACION")
@@ -296,7 +296,7 @@ class Ventana(QWidget):
 		fila9.addLayout(fila9_8)
 		fila9.addLayout(fila9_9)
 		fila9.addLayout(fila9_10)
-		fila9.addWidget(self.botonRespuesta)
+		fila9.addWidget(self.botonRecibir)
 		
 		fila10.addWidget(self.labelSemanticaR)
 		fila11.addWidget(labelMensajeR)
@@ -352,17 +352,6 @@ class Ventana(QWidget):
 		self.textoInfoT.setEnabled(False)
 		self.textoIndicador2T.setEnabled(False)
 		
-		self.textoIndicador1T.setText(self.trama.INDICADOR)
-		self.textoACKT.setText(self.trama.ACK)
-		self.textoENQT.setText(self.trama.ENQ)
-		self.textoCTRT.setText(self.trama.CTR)
-		self.textoDATT.setText(self.trama.DAT)
-		self.textoPPTT.setText(self.trama.PPT)
-		self.textoLPRT.setText(self.trama.LPR)
-		self.textoNUMT.setText(self.trama.NUM)
-		self.textoInfoT.setText(self.trama.INFO)
-		self.textoIndicador2T.setText(self.trama.INDICADOR)
-		
 		self.textoHeaderR.setEnabled(False)
 		self.textoCamposR.setEnabled(False)
 		self.textoInformacionR.setEnabled(False)
@@ -391,7 +380,9 @@ class Ventana(QWidget):
 		self.checkPPT.stateChanged.connect(self._seleccionarPPT)
 		self.checkLPR.stateChanged.connect(self._seleccionarLPR)
 		self.botonTransmisor.clicked.connect(self._enviar_mensaje)
-		self.botonRespuesta.clicked.connect(self._enviar_respuesta)
+		self.botonRecibir.clicked.connect(self._recibir_mensaje)
+		
+		self._mostrar_trama(self._SERVIDOR)
 		
 	def _seleccionarACK(self, estado):
 		if estado == Qt.Checked:
@@ -455,7 +446,8 @@ class Ventana(QWidget):
 		tipo = QInputDialog.getItem(self, "Tipo de usuario", "usuario", ["" ,self._SERVIDOR, self._CLIENTE])
 		if str(tipo[0]) == self._SERVIDOR:
 			port = QInputDialog.getInt(self, "ingrese puerto", "Puerto", 56032)
-			self.transmisor.crear_servidor(port[0])
+			nom = self.transmisor.crear_servidor(port[0])
+			msg = QMessageBox.information(self, "Servidor", "El nombre del servidor es: " + nom)
 			if self.transmisor.conectar_servidor():
 				resp = QMessageBox.information(self, "Conectado", "Se ha establecido la conexion con el cliente")
 			self.setWindowTitle("Protocolo de transmision de datos  --" + self._SERVIDOR)
@@ -468,8 +460,81 @@ class Ventana(QWidget):
 			self.destroy()
 			
 	def _enviar_mensaje(self):
+		self._generar_trama()
+		self._actualizar_semantica(self._SERVIDOR)
 		self.transmisor.enviar(self.trama())
 		
-	def _enviar_respuesta(self):
-		print self.transmisor.recibir()
+	def _recibir_mensaje(self):
+		msg =  self.transmisor.recibir()
+		datos = list(msg.split(self.trama.INDICADOR)[1])
+		self.trama.ACK = datos.pop(0)
+		self.trama.ENQ = datos.pop(0)
+		self.trama.CTR = datos.pop(0)
+		self.trama.DAT = datos.pop(0)
+		self.trama.PPT = datos.pop(0)
+		self.trama.LPR = datos.pop(0)
+		self.trama.NUM = datos.pop(0)
+		self.trama.INFO = "".join(datos)
+		self._mostrar_trama(self._CLIENTE)
 		
+		
+	def _generar_trama(self):
+		self.trama.ACK = str(self.textoACKT.text())
+		self.trama.ENQ = str(self.textoENQT.text())
+		self.trama.CTR = str(self.textoCTRT.text())
+		self.trama.DAT = str(self.textoDATT.text())
+		self.trama.PPT = str(self.textoPPTT.text())
+		self.trama.LPR = str(self.textoLPRT.text())
+		self.trama.NUM = str(self.textoNUMT.text())
+		self.trama.INFO = str(self.textoInfoT.text())
+		
+	def _mostrar_trama(self, tipo):
+		if tipo == self._CLIENTE:
+			self.textoIndicador1R.setText(self.trama.INDICADOR)
+			self.textoACKR.setText(self.trama.ACK)
+			self.textoENQR.setText(self.trama.ENQ)
+			self.textoCTRR.setText(self.trama.CTR)
+			self.textoDATR.setText(self.trama.DAT)
+			self.textoPPTR.setText(self.trama.PPT)
+			self.textoLPRR.setText(self.trama.LPR)
+			self.textoNUMR.setText(self.trama.NUM)
+			self.textoInfoR.setText(self.trama.INFO)
+			self.textoIndicador2R.setText(self.trama.INDICADOR)
+		elif tipo == self._SERVIDOR:
+			self.textoIndicador1T.setText(self.trama.INDICADOR)
+			self.textoACKT.setText(self.trama.ACK)
+			self.textoENQT.setText(self.trama.ENQ)
+			self.textoCTRT.setText(self.trama.CTR)
+			self.textoDATT.setText(self.trama.DAT)
+			self.textoPPTT.setText(self.trama.PPT)
+			self.textoLPRT.setText(self.trama.LPR)
+			self.textoNUMT.setText(self.trama.NUM)
+			self.textoInfoT.setText(self.trama.INFO)
+			self.textoIndicador2T.setText(self.trama.INDICADOR)
+		self._actualizar_semantica(tipo)
+	
+	def _actualizar_semantica(self, tipo):
+		if tipo == self._CLIENTE:
+			if self.trama.esACK():
+				self.labelSemanticaR.setText("Semantica: Trama de control, recibio con exito.")
+			elif self.trama.esPPT():
+				self.labelSemanticaR.setText("Semantica: Trama de control, permiso para transmitir.")
+			elif self.trama.esLPR():
+				self.labelSemanticaR.setText("Semantica: Trama de control, listo para recibir.")
+			elif self.trama.esDAT():
+				self.labelSemanticaR.setText("Semantica: Trama de datos.")
+			elif self.trama.esENQ():
+				self.labelSemanticaR.setText("Semantica: Trama de datos, ultima trama")
+			self.labelSemanticaR.adjustSize()
+		elif tipo == self._SERVIDOR:
+			if self.trama.esACK():
+				self.labelSemanticaT.setText("Semantica: Trama de control, recibio con exito.")
+			elif self.trama.esPPT():
+				self.labelSemanticaT.setText("Semantica: Trama de control, permiso para transmitir.")
+			elif self.trama.esLPR():
+				self.labelSemanticaT.setText("Semantica: Trama de control, listo para recibir.")
+			elif self.trama.esDAT():
+				self.labelSemanticaT.setText("Semantica: Trama de datos.")
+			elif self.trama.esENQ():
+				self.labelSemanticaT.setText("Semantica: Trama de datos, ultima trama")
+			self.labelSemanticaT.adjustSize()

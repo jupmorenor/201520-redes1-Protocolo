@@ -18,8 +18,10 @@ class Transmisor(object):
 		self.tamMensaje = 0
 	
 	def crear_servidor(self, port):
-		self._conector.bind((socket.gethostname(), port))
+		nombre = socket.gethostname()
+		self._conector.bind((nombre, port))
 		self._conector.listen(5)
+		return nombre
 		
 	def conectar_servidor(self):
 		self._socket, self._dir = self._conector.accept()

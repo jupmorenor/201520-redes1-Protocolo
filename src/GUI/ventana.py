@@ -490,7 +490,7 @@ class Ventana(QWidget):
 				if self.trama.esDAT():
 					if len(self.mensaje)>1:
 						self.trama.INFO = self.mensaje.pop(0)
-						self.trama.NUM = cant - len(self.mensaje)
+						self.trama.NUM = str(cant - len(self.mensaje))
 						self.transmisor.enviar(self.trama())
 					else:
 						err = QMessageBox.information(self, "Error", "Ultima trama, envie ENQ")
@@ -501,7 +501,7 @@ class Ventana(QWidget):
 						del err
 					else:
 						self.trama.INFO = self.mensaje.pop(0)
-						self.trama.NUM = cant
+						self.trama.NUM = str(cant)
 						self.transmisor.enviar(self.trama())
 						self.pasos.append("ENQ")
 		elif "LPR" in self.pasos:

@@ -481,11 +481,34 @@ class Ventana(QWidget):
 						self.trama.NUM = str(cant)
 						self.transmisor.enviar(self.trama())
 						self.pasos.append("ENQ")
+						self.pasos.remove("PPT")
 						self._mostrar_trama(self._SERVIDOR)
 			else:
 				err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
 		elif "LPR" in self.pasos:
 			if self.trama.esDAT() or self.trama.esENQ():
+				self._generar_trama()
+				if self.trama.esACK():
+					self.trama.INFO=""
+					self.transmisor.enviar(self.trama())
+					self._mostrar_trama(self._SERVIDOR)
+				else:
+					err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+					self.trama = self.trama_anterior
+					del err
+			else:
+				err = QMessageBox.information(self, "Error", "Trama fuera de contexto")
+		elif "ENQ" in self.pasos:
+			if self.trama.esACK():
+				err = QMessageBox.information(self, "Terminado", "El mensaje se ha entregado por completo")
+				self.textoMensajeT.clear()
+				self.textoFramesT.clear()
+				self.textoMensajeT.setEnabled(True)
+				self.textoFramesT.setEnabled(True)
+				self.trama = Trama()
+				self.pasos.remove("ENQ")
+				self._mostrar_trama(self._SERVIDOR)
+			elif self.trama.esENQ():
 				self._generar_trama()
 				if self.trama.esACK():
 					self.trama.INFO=""
@@ -516,9 +539,16 @@ class Ventana(QWidget):
 				self.textoMensajeR.setText(self.textoMensajeR.text()+self.trama.INFO)
 			elif self.trama.esENQ():
 				self.textoMensajeR.setText(self.textoMensajeR.text()+self.trama.INFO)
+				self.pasos.remove("LPR")
 				self.pasos.append("ENQ")
+				err = QMessageBox.information(self, "Terminado", "El mensaje se ha recibido por completo")
+			elif self.trama.esPPT():
+				self.textoMensajeR.clear()
+			elif self.trama.esACK():
+				if "ENQ" in self.pasos:
+					err = QMessageBox.information(self, "Terminado", "El mensaje se ha entregado por completo")
 		else:
-			err = QMessageBox.information(self, "Error", "Mensaje vacio")
+			err = QMessageBox.information(self, "Error", "Se ha perdido la conexion")
 			del err
 
 	def _preparar_mensaje(self, cant):
@@ -528,8 +558,7 @@ class Ventana(QWidget):
 		tam = len(men)/cant + 1
 		for i in range(cant):
 			self.mensaje.append(men[(i*tam):(i+1)*tam])
-		
-		
+
 	def _generar_trama(self):
 		self.trama.ACK = str(self.textoACKT.text())
 		self.trama.ENQ = str(self.textoENQT.text())
@@ -539,7 +568,7 @@ class Ventana(QWidget):
 		self.trama.LPR = str(self.textoLPRT.text())
 		self.trama.NUM = str(self.textoNUMT.text())
 		self.trama.INFO = str(self.textoInfoT.text())
-		
+
 	def _mostrar_trama(self, tipo):
 		if tipo == self._CLIENTE:
 			self.textoIndicador1R.setText(self.trama.INDICADOR)
@@ -564,9 +593,7 @@ class Ventana(QWidget):
 			self.textoInfoT.setText(self.trama.INFO)
 			self.textoIndicador2T.setText(self.trama.INDICADOR)
 		self._actualizar_semantica(tipo)
-	
-	
-	
+
 	def _actualizar_semantica(self, tipo):
 		if tipo == self._CLIENTE:
 			if self.trama.esACK():
@@ -579,6 +606,8 @@ class Ventana(QWidget):
 				self.labelSemanticaR.setText("Semantica: Trama de datos.")
 			elif self.trama.esENQ():
 				self.labelSemanticaR.setText("Semantica: Trama de datos, ultima trama")
+			elif self.trama.esNull():
+				self.labelSemanticaR.setText("Semantica:")
 			self.labelSemanticaR.adjustSize()
 		elif tipo == self._SERVIDOR:
 			if self.trama.esACK():
@@ -591,4 +620,6 @@ class Ventana(QWidget):
 				self.labelSemanticaT.setText("Semantica: Trama de datos.")
 			elif self.trama.esENQ():
 				self.labelSemanticaT.setText("Semantica: Trama de datos, ultima trama")
+			elif self.trama.esNull():
+				self.labelSemanticaT.setText("Semantica:")
 			self.labelSemanticaT.adjustSize()
